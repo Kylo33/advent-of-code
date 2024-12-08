@@ -1,3 +1,4 @@
+import math
 from typing import List, TypedDict
 from itertools import product
 from enum import Enum
@@ -15,13 +16,18 @@ def eq_is_valid(eq: Equations, operations: List[Operation]):
     ops_options = product(operations, repeat=len(eq["nums"]) - 1)
     for ops in ops_options:
         total = eq["nums"][0]
+        if ops[-1] == Operation.MULTIPLY and eq["ans"] % eq["nums"][-1] != 0:
+            continue
+        if ops[-1] == Operation.CONCAT and not str(eq["ans"]).endswith(str(eq["nums"][-1])):
+            continue
+
         for number, operator in zip(eq["nums"][1:], ops):
             if operator == Operation.ADD:
                 total += number
             elif operator == Operation.MULTIPLY:
                 total *= number
             elif operator == Operation.CONCAT:
-                total = int(f"{total}{number}")
+                total = total * 10 ** (int(math.log10(number)) + 1) + number
 
         if total == eq["ans"]:
             return True
