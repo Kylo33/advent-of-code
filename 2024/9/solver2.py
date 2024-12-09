@@ -30,8 +30,10 @@ for file in files[::-1]:
     # edit the file's starting index
     file[2] = first_empty_block[2]
 
-    # then, edit empty block length and increment its starting index by that length (length will go to 0 eventually)
+    # then, edit empty block length and increment its starting index by that length
     first_empty_block[1] -= file[1]
+    if first_empty_block[1] == 0: # improves time by ~2.3s
+        empty_blocks.remove(first_empty_block)
     first_empty_block[2] += file[1]
 
 # finally, populate an array with the files at their starting index. fill everything else with -1s
