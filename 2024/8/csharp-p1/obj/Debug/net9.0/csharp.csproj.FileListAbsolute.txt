@@ -1,0 +1,15 @@
+/home/renn/Documents/advent-of-code/2024/8/csharp/bin/Debug/net9.0/csharp
+/home/renn/Documents/advent-of-code/2024/8/csharp/bin/Debug/net9.0/csharp.deps.json
+/home/renn/Documents/advent-of-code/2024/8/csharp/bin/Debug/net9.0/csharp.runtimeconfig.json
+/home/renn/Documents/advent-of-code/2024/8/csharp/bin/Debug/net9.0/csharp.dll
+/home/renn/Documents/advent-of-code/2024/8/csharp/bin/Debug/net9.0/csharp.pdb
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.GeneratedMSBuildEditorConfig.editorconfig
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.AssemblyInfoInputs.cache
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.AssemblyInfo.cs
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.csproj.CoreCompileInputs.cache
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.sourcelink.json
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.dll
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/refint/csharp.dll
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.pdb
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/csharp.genruntimeconfig.cache
+/home/renn/Documents/advent-of-code/2024/8/csharp/obj/Debug/net9.0/ref/csharp.dll
