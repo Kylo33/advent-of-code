@@ -1,3 +1,6 @@
+from math import log10
+
+
 def main():
     with open("input") as f:
         stones = list(map(int, f.read().strip().split(" ")))
@@ -14,9 +17,14 @@ def blink(stones):
     for stone in stones:
         if stone == 0:
             new_stones.append(1)
-        elif len(str(stone)) % 2 == 0:
-            halves = str(stone)[:len(str(stone)) // 2], str(stone)[len(str(stone)) // 2:]
-            new_stones.extend(map(int, halves))
+            continue
+
+        lst = int(log10(stone)) + 1
+        elst = 10 ** lst
+
+        if lst % 2 == 0:
+            halves = stone // elst, stone % elst
+            new_stones.extend(halves)
         else:
             new_stones.append(stone * 2024)
 
