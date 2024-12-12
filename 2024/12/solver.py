@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Tuple, List, Set
 
 class Side(Enum):
     TOP = 1
@@ -10,18 +11,18 @@ class Side(Enum):
     def is_vertical(cls, side):
         return side == Side.TOP or side == Side.BOTTOM
 
-DELTAS = ((1, 0), (-1, 0), (0, 1), (0, -1))
+DELTAS= ((1, 0), (-1, 0), (0, 1), (0, -1))
 SIDES = (Side.RIGHT, Side.LEFT, Side.BOTTOM, Side.TOP)
 
 def main():
     with open("input") as f:
         farm = [list(line) for line in f.read().strip().split("\n")]
-        regions = get_regions(farm)
+        regions: List[Set[Tuple[int, int]]] = get_regions(farm)
 
     print(f"Part 1: {part1(regions)}")
     print(f"Part 2: {part2(regions)}")
 
-def part1(regions):
+def part1(regions: List[Set[Tuple[int, int]]]) -> int:
     total = 0
     for region in regions:
         area = len(region)
@@ -33,11 +34,11 @@ def part1(regions):
         total += area * perimeter
     return total
 
-def part2(regions):
+def part2(regions: List[Set[Tuple[int, int]]]) -> int:
     total = 0
     for region in regions:
         area = len(region)
-        fences = set()
+        fences: Set[Tuple[int, int, Side]] = set() # (x, y, side)
         for x, y in region:
             fences |= {(x, y, side) for side, dx, dy in zip(SIDES, *zip(*DELTAS)) if (x + dx, y + dy) not in region}
 
@@ -54,32 +55,32 @@ def part2(regions):
     return total
 
 
-def get_regions(farm):
-    regions = []
-    visited = set()
+def get_regions(farm: List[List[str]]) -> List[Set[Tuple[int, int]]]:
+    regions: List[Set[Tuple[int, int]]] = []
+    visited: Set[Tuple[int, int]] = set()
+
     for y, line in enumerate(farm):
         for x, plant in enumerate(line):
             if (x, y,) not in visited:
-                region = set()
+                region: Set[Tuple[int, int]] = set()
                 traverse(x, y, farm, visited, region)
                 regions.append(region)
+
     return regions
 
 
-def traverse(x, y, farm, visited, region):
+def traverse(x: int, y: int, farm: List[List[str]], visited: Set[Tuple[int, int]], region: Set[Tuple[int, int]]):
     if (x, y) in visited:
         return
     visited.add((x, y))
     region.add((x, y))
 
-    neighbors = ((x + dx, y + dy) for dx, dy in DELTAS if in_farm(farm, x, y, dx, dy))
+    in_bounds = lambda x_val, y_val: 0 <= y_val < len(farm) and 0 <= x_val < len(farm[0])
+    neighbors = ((x + dx, y + dy) for dx, dy in DELTAS if in_bounds(x + dx, y + dy))
+
     for nx, ny in neighbors:
         if farm[y][x] == farm[ny][nx]:
             traverse(nx, ny, farm, visited, region)
-
-
-def in_farm(farm, x, y, dx, dy):
-    return 0 <= y + dy < len(farm) and 0 <= x + dx < len(farm[0])
 
 
 if __name__ == "__main__":
