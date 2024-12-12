@@ -1,12 +1,27 @@
-from itertools import chain
+from enum import Enum
+
+class Side(Enum):
+    TOP = 1
+    RIGHT = 2
+    BOTTOM = 3
+    LEFT = 4
+
+    @classmethod
+    def is_vertical(cls, side):
+        return side == Side.TOP or side == Side.BOTTOM
 
 DELTAS = ((1, 0), (-1, 0), (0, 1), (0, -1))
+SIDES = (Side.RIGHT, Side.LEFT, Side.BOTTOM, Side.TOP)
 
 def main():
     with open("input") as f:
         farm = [list(line) for line in f.read().strip().split("\n")]
         regions = get_regions(farm)
 
+    print(f"Part 1: {part1(regions)}")
+    print(f"Part 2: {part2(regions)}")
+
+def part1(regions):
     total = 0
     for region in regions:
         area = len(region)
@@ -16,8 +31,27 @@ def main():
             perimeter += len(neighbors - region)
 
         total += area * perimeter
+    return total
 
-    print("Part 1:", total)
+def part2(regions):
+    total = 0
+    for region in regions:
+        area = len(region)
+        fences = set()
+        for x, y in region:
+            fences |= {(x, y, side) for side, dx, dy in zip(SIDES, *zip(*DELTAS)) if (x + dx, y + dy) not in region}
+
+        sides = 0
+        for x, y, side in fences:
+            if Side.is_vertical(side):
+                if (x + 1, y, side) in fences:
+                    continue
+            elif (x, y + 1, side) in fences:
+                continue
+            sides += 1
+
+        total += area * sides
+    return total
 
 
 def get_regions(farm):
