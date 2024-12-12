@@ -12,8 +12,8 @@ def main():
         area = len(region)
         perimeter = 0
         for x, y in region:
-            neighbors = {(x + dx, y + dy,) for dx, dy in DELTAS if in_farm(farm, x, y, dx, dy)}
-            perimeter += 4 - len(neighbors & region)
+            neighbors = {(x + dx, y + dy,) for dx, dy in DELTAS}
+            perimeter += len(neighbors - region)
 
         total += area * perimeter
 
