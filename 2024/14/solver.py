@@ -4,16 +4,20 @@ from functools import reduce
 from queue import Queue
 
 WIDTH, HEIGHT = 101, 103
-DELTAS = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if not (dx == 0 and dy == 0)]
+DELTAS = [
+    (dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if not (dx == 0 and dy == 0)
+]
 
 
 def main():
     with open("input") as f:
         robots = defaultdict(list)
         for l in f.read().strip().split("\n"):
-            m = re.fullmatch(r"p=(?P<px>\d+),(?P<py>\d+) v=(?P<vx>-?\d+),(?P<vy>-?\d+)", l)
-            px, py, vx, vy = list(map(int, (m["px"], m["py"], m["vx"], m["vy"])))
-            robots[(px, py,)].append((vx, vy,))
+            match = re.fullmatch(
+                r"p=(?P<px>\d+),(?P<py>\d+) v=(?P<vx>-?\d+),(?P<vy>-?\d+)", l
+            )
+            pos_x, pos_y, vel_x, vel_y = map(int, match.groups())
+            robots[(pos_x, pos_y)].append((vel_x, vel_y))
 
     print(f"Part 1: {part1(robots)}")
     print(f"Part 2: {part2(robots)}")
@@ -23,57 +27,64 @@ def step(robots):
     r = defaultdict(list)
     for px, py in robots:
         for vx, vy in robots[(px, py)]:
-            r[((px + vx) % WIDTH, (py + vy) % HEIGHT)].append((vx, vy,))
+            r[((px + vx) % WIDTH, (py + vy) % HEIGHT)].append(
+                (
+                    vx,
+                    vy,
+                )
+            )
     return r
 
 
 def part1(robots):
+    final_positions = [
+        (
+            (position[0] + velocity[0] * 100) % WIDTH,
+            (position[1] + velocity[1] * 100) % HEIGHT,
+        )
+        for position, velocities in robots.items()
+        for velocity in velocities
+    ]
+
     quadrants = [0 for _ in range(4)]
-    for _ in range(100):
-        robots = step(robots)
-    for px, py in robots:
-        robot_count = len(robots[(px, py)])
+    for pos_x, pos_y in final_positions:
+        if pos_x == WIDTH // 2 or pos_y == HEIGHT // 2:
+            continue
+        positive_y = pos_y < HEIGHT // 2
+        positive_x = pos_x > WIDTH // 2
 
-        pos_y = py < HEIGHT // 2
-        neg_y = py > HEIGHT // 2
-        neg_x = px < WIDTH // 2
-        pos_x = px > WIDTH // 2
-
-        if pos_y:
-            if neg_x:
-                quadrants[0] += robot_count
-            elif pos_x:
-                quadrants[1] += robot_count
-        elif neg_y:
-            if neg_x:
-                quadrants[2] += robot_count
-            elif pos_x:
-                quadrants[3] += robot_count
+        if positive_y:
+            quadrants[0 if positive_x else 1] += 1
+        else:
+            quadrants[2 if positive_x else 3] += 1
 
     return reduce(lambda x, y: x * y, quadrants)
 
 
-def part2(robots): # px, py, vx, vy
-    largest_blob = 0
+def part2(robots):
     steps = 0
     while True:
         # BFS robots to find largest blob
         seen = set()
-        for robot in robots:
-            x, y = robot
+        largest_blob = 0
+        for starting_robot in robots:
             q = Queue()
-            q.put(robot)
+            q.put(starting_robot)
             blob_size = 0
             while not q.empty():
-                r = q.get()
-                if r in seen:
+                robot = q.get()
+                if robot in seen:
                     continue
                 blob_size += 1
-                seen.add(r)
-                neighbors = {(r[0] + dx, r[1] + dy) for dx, dy in DELTAS if 0 <= r[0] + dx < WIDTH and 0 <= r[1] + dy < HEIGHT}
+                seen.add(robot)
+                robot_x, robot_y = robot
+                neighbors = {
+                    (robot_x + dx, robot_y + dy)
+                    for dx, dy in DELTAS
+                    if 0 <= robot_x + dx < WIDTH and 0 <= robot_y + dy < HEIGHT
+                }
                 for neighbor in neighbors & robots.keys():
                     q.put(neighbor)
-
             largest_blob = max(largest_blob, blob_size)
 
         if largest_blob > 40:
@@ -83,8 +94,11 @@ def part2(robots): # px, py, vx, vy
         robots = step(robots)
         steps += 1
 
-    # Write robots to a file
-    lines = ["".join(['#' if (x, y) in robots else '.' for x in range(WIDTH)]) + "\n" for y in range(HEIGHT)]
+    # Write robots to a file — manually checked for christmas trees and adjusted the threshold above.
+    lines = [
+        "".join(["#" if (x, y) in robots else "." for x in range(WIDTH)]) + "\n"
+        for y in range(HEIGHT)
+    ]
     with open("output", "w") as of:
         of.writelines(lines)
 
